@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - 1", "Chain Reaction - Spatial - 1.csproj", "{969E88F8-FFD2-4266-BC14-6F8D503463C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - 1.Editor", "Chain Reaction - Spatial - 1.Editor.csproj", "{58A5E9DF-43B6-C3B6-FEA2-D19F59AFA092}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{969E88F8-FFD2-4266-BC14-6F8D503463C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{969E88F8-FFD2-4266-BC14-6F8D503463C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{969E88F8-FFD2-4266-BC14-6F8D503463C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{969E88F8-FFD2-4266-BC14-6F8D503463C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58A5E9DF-43B6-C3B6-FEA2-D19F59AFA092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58A5E9DF-43B6-C3B6-FEA2-D19F59AFA092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58A5E9DF-43B6-C3B6-FEA2-D19F59AFA092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58A5E9DF-43B6-C3B6-FEA2-D19F59AFA092}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
