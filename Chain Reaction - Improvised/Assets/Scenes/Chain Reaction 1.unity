@@ -173,10 +173,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerArray:
   - PlayerName: Taeyoon
-    PlayerColor: {r: 1, g: 0, b: 0, a: 0}
+    PlayerColor: {r: 0.9632353, g: 0.27622187, b: 0.27622187, a: 0}
     PlayerID: 0
   - PlayerName: Atahan
-    PlayerColor: {r: 0.24137926, g: 0, b: 1, a: 0}
+    PlayerColor: {r: 0.1835532, g: 0.6255637, b: 0.71323526, a: 0}
     PlayerID: 0
 --- !u!1 &1631120822
 GameObject:
@@ -290,7 +290,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1

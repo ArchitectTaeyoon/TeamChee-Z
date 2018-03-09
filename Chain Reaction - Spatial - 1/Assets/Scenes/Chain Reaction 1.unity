@@ -268,14 +268,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerArray:
-  - PlayerName: Taeyoon
-    PlayerColor: {r: 1, g: 0, b: 0, a: 0}
+  - PlayerName: Player 1
+    PlayerColor: {r: 0.9647059, g: 0.27450982, b: 0.27450982, a: 0}
     PlayerID: 0
-  - PlayerName: Atahan
-    PlayerColor: {r: 0.24137926, g: 0, b: 1, a: 0}
-    PlayerID: 0
-  - PlayerName: Bava
-    PlayerColor: {r: 0, g: 0.8455882, b: 0.110801324, a: 0}
+  - PlayerName: Player 2
+    PlayerColor: {r: 0.18431373, g: 0.627451, b: 0.7137255, a: 0}
     PlayerID: 0
 --- !u!114 &991274030 stripped
 MonoBehaviour:
@@ -765,7 +762,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 50a37c8df9d9d8a44a859becc49f1b0a, type: 2}
+  - {fileID: 2100000, guid: 4a9be5153754d20429275bc207768f30, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

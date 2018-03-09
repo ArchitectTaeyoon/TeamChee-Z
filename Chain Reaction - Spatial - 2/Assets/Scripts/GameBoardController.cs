@@ -58,7 +58,7 @@ public class GameBoardController : MonoBehaviour {
         if (ChainReactionOver&&gameObject.GetComponent<PlayerController>().GetPlayState()) {
             gameObject.GetComponent<PlayerController>().NextTurn();
         }
-        meshren.material.SetColor("_Color", baseColor);
+        //meshren.material.SetColor("_Color", baseColor);
         
     }
 

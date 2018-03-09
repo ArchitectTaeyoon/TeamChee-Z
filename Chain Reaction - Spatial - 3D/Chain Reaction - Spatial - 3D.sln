@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - 3D", "Chain Reaction - Spatial - 3D.csproj", "{0C83AB0F-2CE3-D5D3-9AF5-2154924AD512}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - 3D.Editor", "Chain Reaction - Spatial - 3D.Editor.csproj", "{0DBECD57-EAE5-0ED6-751D-CA8BE0F10438}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C83AB0F-2CE3-D5D3-9AF5-2154924AD512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C83AB0F-2CE3-D5D3-9AF5-2154924AD512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C83AB0F-2CE3-D5D3-9AF5-2154924AD512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C83AB0F-2CE3-D5D3-9AF5-2154924AD512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DBECD57-EAE5-0ED6-751D-CA8BE0F10438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DBECD57-EAE5-0ED6-751D-CA8BE0F10438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DBECD57-EAE5-0ED6-751D-CA8BE0F10438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DBECD57-EAE5-0ED6-751D-CA8BE0F10438}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -343,8 +343,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7def0a9aee00838468c652b98f61dbb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  length: 10
-  breadth: 10
+  length: 3
+  breadth: 3
   gridPrefab: {fileID: 1438600789783338, guid: e9fbedf22ee2e4e4a81bc899908a9ed1, type: 2}
   costBubblePrefab: {fileID: 1333806187993980, guid: 2e781fa0f2c7e594c99b129a438fdfef,
     type: 2}

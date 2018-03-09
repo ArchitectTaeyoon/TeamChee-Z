@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GridUnit : MonoBehaviour {
 
@@ -177,7 +178,7 @@ public class GridUnit : MonoBehaviour {
                     RotationAngle = RotationArray[3];
                     break;
                 case "random":
-                    RotationAngle = RotationArray[Random.Range(0, 3)];
+                    RotationAngle = RotationArray[UnityEngine.Random.Range(0, 3)];
                     break;
                 default:
                     break;
@@ -337,22 +338,42 @@ public class GridUnit : MonoBehaviour {
     //Compute neighbourhood
     public void ComputeNeighbourhood()
     {
-        if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i - i, j])
+        try
         {
-            Neighbourhood.Add("left", -1);
+            if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i - i, j])
+            {
+                Neighbourhood.Add("left", -1);
+            }
         }
-        if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i, j + 1])
+        catch (Exception) { }
+
+        try
         {
-            Neighbourhood.Add("up", -1);
+            if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i, j + 1])
+            {
+                Neighbourhood.Add("up", -1);
+            }
         }
-        if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i + i, j])
+        catch (Exception) { }
+
+        try
         {
-            Neighbourhood.Add("right", -1);
+            if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i + i, j])
+            {
+                Neighbourhood.Add("right", -1);
+            }
         }
-        if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i, j - 1])
+        catch (Exception) { }
+
+        try
         {
-            Neighbourhood.Add("down", -1);
+            if (GameObject.Find("GameBoard").GetComponent<GameBoardController>().GameBoardArray[i, j - 1])
+            {
+                Neighbourhood.Add("down", -1);
+            }
         }
+        catch (Exception) { }
+
         Sides = new string[Neighbourhood.Keys.Count];
         Neighbourhood.Keys.CopyTo(Sides, 0);
         MaximumCapacity = Sides.Length;

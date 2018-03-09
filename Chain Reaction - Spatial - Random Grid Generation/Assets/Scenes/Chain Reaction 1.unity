@@ -344,8 +344,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7def0a9aee00838468c652b98f61dbb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  length: 10
-  breadth: 10
+  length: 3
+  breadth: 3
   gridPrefab: {fileID: 1438600789783338, guid: e9fbedf22ee2e4e4a81bc899908a9ed1, type: 2}
   costBubblePrefab: {fileID: 1333806187993980, guid: 2e781fa0f2c7e594c99b129a438fdfef,
     type: 2}
@@ -384,11 +384,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerArray:
   - PlayerName: Player 1
-    PlayerColor: {r: 1, g: 0, b: 0, a: 0}
+    PlayerColor: {r: 0.9647059, g: 0.27450982, b: 0.27450982, a: 0}
     PlayerID: 0
     Money: 0
   - PlayerName: Player 2
-    PlayerColor: {r: 0.07586192, g: 0, b: 1, a: 0}
+    PlayerColor: {r: 0.18431373, g: 0.627451, b: 0.7137255, a: 0}
     PlayerID: 0
     Money: 0
   StartingMoney: 400
@@ -1064,7 +1064,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 50a37c8df9d9d8a44a859becc49f1b0a, type: 2}
+  - {fileID: 2100000, guid: 4a9be5153754d20429275bc207768f30, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

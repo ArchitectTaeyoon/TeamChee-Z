@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - Random Grid Generation - 2", "Chain Reaction - Spatial - Random Grid Generation - 2.csproj", "{59BBF903-D3B8-3F1C-5085-5F3963E7157D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chain Reaction - Spatial - Random Grid Generation - 2.Editor", "Chain Reaction - Spatial - Random Grid Generation - 2.Editor.csproj", "{D15064DB-AAE3-FEAF-57F0-0981097381DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59BBF903-D3B8-3F1C-5085-5F3963E7157D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59BBF903-D3B8-3F1C-5085-5F3963E7157D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59BBF903-D3B8-3F1C-5085-5F3963E7157D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59BBF903-D3B8-3F1C-5085-5F3963E7157D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15064DB-AAE3-FEAF-57F0-0981097381DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15064DB-AAE3-FEAF-57F0-0981097381DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15064DB-AAE3-FEAF-57F0-0981097381DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15064DB-AAE3-FEAF-57F0-0981097381DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
