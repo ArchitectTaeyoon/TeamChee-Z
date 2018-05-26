@@ -3,6 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "The Hexagon Game", "Assembly-CSharp.csproj", "{50A0EB84-CC50-DBF0-3297-F21A624FD077}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "The Hexagon Game", "Assembly-CSharp-firstpass.csproj", "{A8F01E7B-46AB-F9E7-DB8B-86E4F76DCBF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "The Hexagon Game", "Assembly-CSharp-Editor-firstpass.csproj", "{C40A1A61-E12C-B08D-AE0B-9320BD27A6FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "The Hexagon Game", "Assembly-CSharp-Editor.csproj", "{CB3D91F5-6403-61AB-75CD-30E461730FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +19,18 @@ Global
 		{50A0EB84-CC50-DBF0-3297-F21A624FD077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50A0EB84-CC50-DBF0-3297-F21A624FD077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50A0EB84-CC50-DBF0-3297-F21A624FD077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8F01E7B-46AB-F9E7-DB8B-86E4F76DCBF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8F01E7B-46AB-F9E7-DB8B-86E4F76DCBF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8F01E7B-46AB-F9E7-DB8B-86E4F76DCBF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8F01E7B-46AB-F9E7-DB8B-86E4F76DCBF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C40A1A61-E12C-B08D-AE0B-9320BD27A6FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C40A1A61-E12C-B08D-AE0B-9320BD27A6FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C40A1A61-E12C-B08D-AE0B-9320BD27A6FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C40A1A61-E12C-B08D-AE0B-9320BD27A6FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB3D91F5-6403-61AB-75CD-30E461730FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB3D91F5-6403-61AB-75CD-30E461730FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB3D91F5-6403-61AB-75CD-30E461730FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB3D91F5-6403-61AB-75CD-30E461730FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

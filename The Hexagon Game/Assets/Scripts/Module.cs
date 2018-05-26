@@ -102,6 +102,11 @@ public class Module : MonoBehaviour {
     public GameObject OW_A1_A61_B61_B1;
     public GameObject OW_C1_C61_B61_B1;
 
+    //Arrays to store the guiding spheres
+    [HideInInspector]
+    public GameObject[] A_Spheres;
+    public GameObject[] B_Spheres;
+    public GameObject[] C_Spheres;
 
     // Use this for initialization
     void Start () {
@@ -112,4 +117,12 @@ public class Module : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    //Populate The Sphere Arrays
+    public void PopulateSphereArrays()
+    {
+        A_Spheres = new GameObject[] { A0, A1, A12, A2, A23, A3, A34, A4, A45, A5, A56, A6, A61 };
+        B_Spheres = new GameObject[] { B1, B12, B2, B23, B3, B34, B4, B45, B5, B56, B6, B61 };
+        C_Spheres = new GameObject[] { C0, C1, C12, C2, C23, C3, C34, C4, C45, C5, C56, C6, C61 };
+    }
 }

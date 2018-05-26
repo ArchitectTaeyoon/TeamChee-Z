@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 4120877241199950}
   - component: {fileID: 114453486118011052}
   - component: {fileID: 64703233287881372}
+  - component: {fileID: 114804984036732972}
   m_Layer: 0
   m_Name: Module
   m_TagString: Untagged
@@ -6907,3 +6908,19 @@ MonoBehaviour:
   OW_A6_A61_B61_B6: {fileID: 1975162858871632}
   OW_A1_A61_B61_B1: {fileID: 1468905757194202}
   OW_C1_C61_B61_B1: {fileID: 1538788032993900}
+  A_Spheres: []
+  B_Spheres: []
+  C_Spheres: []
+--- !u!114 &114804984036732972
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1031984737928862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b62a501457ff5b4bb9c80899b4c3ee7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 10
+  Follow: 0

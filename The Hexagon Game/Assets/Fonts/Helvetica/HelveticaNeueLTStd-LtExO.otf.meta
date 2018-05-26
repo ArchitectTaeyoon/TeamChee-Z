@@ -1,0 +1,35 @@
+fileFormatVersion: 2
+guid: 7f526be2520ad484cbec2d1b226a85e3
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Helvetica Neue LT Std
+  fontNames:
+  - Helvetica Neue LT Std
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5623a3d239c20344ba6ee0b37f6a63d1, type: 3}
+  - {fileID: 12800000, guid: 45602d1414036624bae8cf43aa0db1dd, type: 3}
+  - {fileID: 12800000, guid: 3eb89eb50a931344ca20f66471a4f682, type: 3}
+  - {fileID: 12800000, guid: 2b60c70668c78144bba3ec8f0afe7fe4, type: 3}
+  - {fileID: 12800000, guid: 6ead75460c608cc46aab2fdaeca6bd54, type: 3}
+  - {fileID: 12800000, guid: 597ed3965cd29f040ab6eeb3cc80c946, type: 3}
+  - {fileID: 12800000, guid: 76d946c6ba4504b4bb8956dfcdb7218b, type: 3}
+  - {fileID: 12800000, guid: 26c8ff37886cc5d4ba86a7491be2bb0f, type: 3}
+  - {fileID: 12800000, guid: 6b597ad7aad6e9b4f9e74b59319156da, type: 3}
+  - {fileID: 12800000, guid: 26e87a2a365f30248985d33cce8ff5d6, type: 3}
+  - {fileID: 12800000, guid: 4b48f33b35ad36e42b8e842b3b81ad46, type: 3}
+  - {fileID: 12800000, guid: 275e6ecbd14a6e14b95947b1d4712adc, type: 3}
+  - {fileID: 12800000, guid: 622992bca810cd34a8c0999d391a7d9b, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
