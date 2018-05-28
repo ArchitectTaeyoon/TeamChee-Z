@@ -4,33 +4,88 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
+    [Header("Camera handling speed")]
     public float zoomSpeed = 5.0f;
     public float panSpeed = 5.0f;
     public float turnSpeed = 5.0f;
 
+    [Header("Module selection material")]
+    public Material unselectedModuleFrame;
+    public Material selectedModuleFrame;
+    public Material highlightedModuleFrame;
+
     Vector3 mousePosition;
-    bool mouseInsideScreen = false;
-    bool mouseCarriesModule = false;
+    [HideInInspector]
+    public bool mouseInsideScreen = false;
+    public bool mouseCarriesModule = false;
 
     GameObject InstantiatedModule;
+    GameObject SelectedModule;
     GameObject ModulePrefab;
+    public int MovingModuleId;
+
+    int MouseClickCounter = 0;
+    float DoubleClickInterval = 0.2f;
 
 	// Use this for initialization
 	void Start () {
-        ModulePrefab = GameObject.Find("Game").GetComponent<Game>().Module;
+        ModulePrefab = GameObject.Find("Game").GetComponent<Game>().Module; 
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
+        GetComponent<LineRenderer>().SetPosition(0, this.transform.position+Vector3.up*-0.5f);
         CheckMouseInsideScreen();
+        if (MouseClickCounter > 2)
+            MouseClickCounter = 0;
 
-        if (mouseInsideScreen)
+        if (mouseInsideScreen && GameObject.Find("Game").GetComponent<Game>().reassigned)
         {
+            CastRay();
+
             if (mouseCarriesModule)
             {
-               // mousePosition = Input.mousePosition;
-               // InstantiatedModule.transform.position = mousePosition;
+                if (Input.GetMouseButton(0))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Place();
+                }
+
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].transform.Rotate(0, 60.0f, 0f);
+                }
+
+                if (GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().placedOnce == true)
+                {
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().OnMove();
+                    if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].transform.position = GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition;
+                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Follow = false;
+                        mouseCarriesModule = false;
+                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition = transform.position;
+                    }
+                }
+
+                if (Input.GetKeyDown(KeyCode.Delete))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().reassigned = false;
+                    Destroy(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].gameObject);
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList.RemoveAt(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().ModuleNumber);
+                    mouseCarriesModule = false;
+                }
+            }
+            else
+            {
+                //Select a module
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Debug.Log("Mouse Click: " + MouseClickCounter);
+                    MouseClickCounter++;
+                    if(MouseClickCounter==1)
+                        StartCoroutine("DoubleClickDetector");
+                }
             }
 
             //Zoom in
@@ -93,10 +148,58 @@ public class CameraController : MonoBehaviour {
         if (!mouseCarriesModule)
         {
             InstantiatedModule = Instantiate(ModulePrefab, Input.mousePosition, Quaternion.Euler(0,90,0));
-            InstantiatedModule.name = "Module " + GameObject.Find("Game").GetComponent<Game>().NumberOfModules.ToString();
             GameObject.Find("Game").GetComponent<Game>().AddToModulesList(InstantiatedModule);
+            InstantiatedModule.GetComponent<Module>().ModuleNumber = GameObject.Find("Game").GetComponent<Game>().ModulesList.Count-1;
+            InstantiatedModule.name = "Module " + InstantiatedModule.GetComponent<Module>().ModuleNumber.ToString();
+           
+            MovingModuleId = InstantiatedModule.GetComponent<Module>().ModuleNumber;
+           
             mouseCarriesModule = true;
-            InstantiatedModule.GetComponent<FollowMouse>().Follow = true;
+            //InstantiatedModule.GetComponent<FollowMouse>().Follow = true;
         }
     }
+
+    public void SelectModule()
+    {
+        RaycastHit hitInfo = new RaycastHit();
+        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, 10);
+        if (hit)
+        {
+            SelectedModule = hitInfo.transform.gameObject;
+            MovingModuleId = SelectedModule.GetComponent<Module>().ModuleNumber;
+            Debug.Log("Selected Module: " + SelectedModule.name);
+            mouseCarriesModule = true;
+            //SelectedModule.GetComponent<FollowMouse>().Follow = true;
+        }
+        
+    }
+
+    IEnumerator DoubleClickDetector()
+    {
+        yield return new WaitForSeconds(DoubleClickInterval);
+        if (MouseClickCounter > 1)
+        {
+            Debug.Log("Double Click.");
+            SelectModule();
+        }
+        MouseClickCounter = 0;
+        yield return new WaitForSeconds(0.05f);
+    }
+
+    //Cast Ray onto screen
+    public void CastRay()
+    {
+        GetComponent<LineRenderer>().enabled = true;
+        RaycastHit hit;
+        Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+        Vector3 RayEnd;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            RayEnd = hit.point;
+            
+            GetComponent<LineRenderer>().SetPosition(1, RayEnd);
+        }
+    }
+
 }

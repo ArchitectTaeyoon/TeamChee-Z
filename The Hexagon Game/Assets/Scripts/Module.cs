@@ -51,6 +51,7 @@ public class Module : MonoBehaviour {
     public GameObject C61;
     #endregion
 
+    #region SURFACE GAMEOBJECTS
     [Header("Surfaces")]
     [Header("A Surfaces")]
     public GameObject S_A0_A1_A2;
@@ -101,22 +102,38 @@ public class Module : MonoBehaviour {
     public GameObject OW_A6_A61_B61_B6;
     public GameObject OW_A1_A61_B61_B1;
     public GameObject OW_C1_C61_B61_B1;
+    #endregion
 
     //Arrays to store the guiding spheres
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject[] A_Spheres;
     public GameObject[] B_Spheres;
     public GameObject[] C_Spheres;
 
+    //Booleans
+    public bool highlighted;
+    public bool placedOnce = false;
+
+    //Positions
+    public Vector3 LastPosition;
+
+    //Identity
+    public int ModuleNumber;
+
+    //B5
+    public float distance;
+    public Vector3 directionVector;
+
     // Use this for initialization
     void Start () {
-		
+        PopulateSphereArrays();
+        findDisplacementBetweenSpheres();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        
+    }
 
     //Populate The Sphere Arrays
     public void PopulateSphereArrays()
@@ -124,5 +141,47 @@ public class Module : MonoBehaviour {
         A_Spheres = new GameObject[] { A0, A1, A12, A2, A23, A3, A34, A4, A45, A5, A56, A6, A61 };
         B_Spheres = new GameObject[] { B1, B12, B2, B23, B3, B34, B4, B45, B5, B56, B6, B61 };
         C_Spheres = new GameObject[] { C0, C1, C12, C2, C23, C3, C34, C4, C45, C5, C56, C6, C61 };
+    }
+
+    //Highlight
+    public void Highlight()
+    {
+        this.gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedModuleFrame;
+    }
+
+    //On Move
+    public void OnMove()
+    {
+        this.gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleFrame;
+    }
+
+    public void OnMouseEnter()
+    {
+        Highlight();
+        if(GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule)
+        {
+            if(GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId != ModuleNumber)
+            {
+                GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<FollowMouse>().SnappableModuleAvailable = true;
+                GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<FollowMouse>().SnappableModuleID = ModuleNumber;
+            }
+        }
+    }
+
+    public void OnMouseExit()
+    {
+        this.gameObject.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedModuleFrame;
+        if (GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule)
+            GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<FollowMouse>().SnappableModuleAvailable = false;
+    }
+
+    public void findDisplacementBetweenSpheres()
+    {
+        directionVector = transform.position - A0.transform.position;
+        distance = directionVector.magnitude;
+        //directionVector = directionVector / distance;
+        Debug.Log("Distance between A0 and B5: " + distance);
+        Debug.Log("Direction Vector between A0 and B5: " + directionVector);
+
     }
 }
