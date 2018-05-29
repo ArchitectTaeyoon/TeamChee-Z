@@ -106,9 +106,8 @@ public class Module : MonoBehaviour {
 
     //Arrays to store the guiding spheres
     //[HideInInspector]
-    public GameObject[] A_Spheres;
-    public GameObject[] B_Spheres;
-    public GameObject[] C_Spheres;
+    public GameObject[] Guide_Spheres;
+
 
     //Booleans
     public bool highlighted;
@@ -120,27 +119,39 @@ public class Module : MonoBehaviour {
     //Identity
     public int ModuleNumber;
 
-    //B5
-    public float distance;
-    public Vector3 directionVector;
+    //ModuleSphere as reference point
+    public int ReferenceSphereID;
+    public Vector3 ReferenceDisplacement;
+
+    //Colliding Boolean
+    public bool Colliding = false;
 
     // Use this for initialization
     void Start () {
         PopulateSphereArrays();
-        findDisplacementBetweenSpheres();
+        ReferenceSphereID = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        
+        UpdateGuideSphereMaterial();
+        ReferenceDisplacement = transform.position - Guide_Spheres[ReferenceSphereID].transform.position;
+        if (GetComponent<FollowMouse>().Follow)
+        {
+            SetGuideSphereColliders(false);
+        }
+        else
+        {
+            SetGuideSphereColliders(true);
+        }
     }
 
     //Populate The Sphere Arrays
     public void PopulateSphereArrays()
     {
-        A_Spheres = new GameObject[] { A0, A1, A12, A2, A23, A3, A34, A4, A45, A5, A56, A6, A61 };
-        B_Spheres = new GameObject[] { B1, B12, B2, B23, B3, B34, B4, B45, B5, B56, B6, B61 };
-        C_Spheres = new GameObject[] { C0, C1, C12, C2, C23, C3, C34, C4, C45, C5, C56, C6, C61 };
+        Guide_Spheres = new GameObject[] { A0, A1, A12, A2, A23, A3, A34, A4, A45, A5, A56, A6, A61,
+                                           B1, B12, B2, B23, B3, B34, B4, B45, B5, B56, B6, B61,
+                                           C0, C1, C12, C2, C23, C3, C34, C4, C45, C5, C56, C6, C61 };
     }
 
     //Highlight
@@ -175,13 +186,163 @@ public class Module : MonoBehaviour {
             GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<FollowMouse>().SnappableModuleAvailable = false;
     }
 
-    public void findDisplacementBetweenSpheres()
+    public void UpdateGuideSphereMaterial()
     {
-        directionVector = transform.position - A0.transform.position;
-        distance = directionVector.magnitude;
-        //directionVector = directionVector / distance;
-        Debug.Log("Distance between A0 and B5: " + distance);
-        Debug.Log("Direction Vector between A0 and B5: " + directionVector);
+        for (int i = 0; i < Guide_Spheres.Length; i++)
+        {
+            if (i != ReferenceSphereID)
+                Guide_Spheres[i].GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedModuleSphere;
+            else
+                Guide_Spheres[i].GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
+        }
 
+    }
+
+    //public void OnTriggerEnter(Collider other)
+    //{
+    //    Debug.Log("Colliding object: " + other.gameObject.name);
+    //    other.gameObject.GetComponent<Module>().Colliding = true;
+    //    this.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().collidingModuleFrame;
+    //    other.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().collidingModuleFrame;
+    //}
+
+    //public void OnTriggerExit(Collider other)
+    //{
+    //    Colliding = false;
+    //    //if (other.gameObject.GetComponent<FollowMouse>().Follow)
+    //        other.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleFrame;
+    //    //else
+    //        this.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedModuleFrame;
+    //}
+
+    //Toggle Guide Sphere Colliders
+    public void SetGuideSphereColliders(bool _SphereState)
+    {
+        if (_SphereState == true)
+        {
+            for (int i = 0; i < Guide_Spheres.Length; i++)
+            {
+                Guide_Spheres[i].GetComponent<SphereCollider>().enabled = true;
+                this.GetComponent<MeshCollider>().enabled = true;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Guide_Spheres.Length; i++)
+            {
+                Guide_Spheres[i].GetComponent<SphereCollider>().enabled = false;
+                this.GetComponent<MeshCollider>().enabled = false;
+            }
+        }
+    }
+
+    //Switch reference sphere 
+    public void SwitchReferenceSphereForward()
+    {
+        if (ReferenceSphereID < Guide_Spheres.Length-1)
+            ReferenceSphereID++;
+        else
+            ReferenceSphereID = 0;
+    }
+
+    public void SwitchReferenceSphereBackward()
+    {
+        if (ReferenceSphereID > 0)
+            ReferenceSphereID--;
+        else
+            ReferenceSphereID = Guide_Spheres.Length-1;
+    }
+
+    //Rotate Reference soheres on rotation
+    public void RotateReferenceSpheres()
+    {
+        if (ReferenceSphereID == 0)
+        {
+            ReferenceSphereID = 0;
+            return;
+        }
+        if (ReferenceSphereID == 1)
+        {
+            ReferenceSphereID = 11;
+            return;
+        }
+        if (ReferenceSphereID == 2)
+        {
+            ReferenceSphereID = 12;
+            return;
+        }
+        if (ReferenceSphereID >= 3 && ReferenceSphereID <= 12)
+        {
+            ReferenceSphereID -= 2;
+            return;
+        }
+        if (ReferenceSphereID == 13)
+        {
+            ReferenceSphereID = 23;
+            return;
+        }
+        if (ReferenceSphereID == 14)
+        {
+            ReferenceSphereID = 24;
+            return;
+        }
+        if (ReferenceSphereID == 25)
+        {
+            ReferenceSphereID = 25;
+            return;
+        }
+        if (ReferenceSphereID >= 15 && ReferenceSphereID <= 24)
+        {
+            ReferenceSphereID -= 2;
+            return;
+        }
+        if (ReferenceSphereID == 26)
+        {
+            ReferenceSphereID = 36;
+            return;
+        }
+        if (ReferenceSphereID == 27)
+        {
+            ReferenceSphereID = 37;
+            return;
+        }
+        if (ReferenceSphereID >= 28 && ReferenceSphereID <= 37)
+        {
+            ReferenceSphereID -= 2;
+            return;
+        }
+
+    }
+
+    public void RotateModule()
+    {
+        StartCoroutine("ModuleRotation");
+    }
+
+    IEnumerator ModuleRotation()
+    {
+        int NumOfDivisions = (int)60 / 6;
+        for (int i = 0; i < NumOfDivisions; i++)
+        {
+            gameObject.transform.RotateAround(transform.position,Vector3.up,6.0f);
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    //Collision Detection
+    public void CollisionDetection()
+    {
+        if (GetComponent<FollowMouse>().SnappableModuleAvailable)
+        {
+            Colliding = true;
+            this.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().collidingModuleFrame;
+            GameObject.Find("Game").GetComponent<Game>().ModulesList[GetComponent<FollowMouse>().SnappableModuleID].transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().collidingModuleFrame;
+        }
+        else
+        {
+            Colliding = false;
+            this.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleFrame;
+            GameObject.Find("Game").GetComponent<Game>().ModulesList[GetComponent<FollowMouse>().SnappableModuleID].transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedModuleFrame;
+        }
     }
 }

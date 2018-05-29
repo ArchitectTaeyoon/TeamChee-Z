@@ -19,111 +19,92 @@ public class FollowMouse : MonoBehaviour {
 	void LateUpdate () {
         if (Follow)
         {
+            //GetComponent<Rigidbody>().detectCollisions = false;
+            GetComponent<Module>().CollisionDetection();
             RaycastHit hitInfo;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-
-            if (SnappableModuleAvailable)
+            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Spheres))
             {
-                if (Physics.Raycast(ray, out hitInfo, 10))
-                {
-                    transform.position = ClosestModuleSphere(hitInfo.point, GameObject.Find("Game").GetComponent<Game>().ModulesList[SnappableModuleID]);
-                }
+                Debug.Log("Hit object: " + hitInfo.transform.gameObject.name);
+                hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
+                Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                transform.position = position;
             }
 
             else
             {
-
-                if (Physics.Raycast(ray, out hitInfo, 9))
+                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Grid))
                 {
                     //Debug.Log(hitInfo.point);
-                    Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + GetComponent<Module>().directionVector;
+                    Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                    //Vector3 position = hitInfo.transform.gameObject.transform.position+ this.GetComponent<Module>().ReferenceDisplacement;
+                    ClosestGridSphere(hitInfo.point).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                    ///hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
                     transform.position = position;
-
                 }
                 else
                 {
                     Vector3 mousePosition = Input.mousePosition;
                     mousePosition.z = distance;
-                    transform.position = Camera.main.ScreenToWorldPoint(mousePosition);
+                    transform.position = Camera.main.ScreenToWorldPoint(mousePosition) + this.GetComponent<Module>().ReferenceDisplacement;
                 }
             }
-
+            
+        }
+        else
+        {
+           // GetComponent<Rigidbody>().detectCollisions = true;
         }
 	}
 
     public GameObject ClosestGridSphere(Vector3 position)
     {
         int x = Mathf.RoundToInt(position.x / GameObject.Find("Grid").GetComponent<TriangularGrid>().GridXDimension);
-        int y = Mathf.RoundToInt(position.y / GameObject.Find("Grid").GetComponent<TriangularGrid>().GridXDimension);
         int z = Mathf.RoundToInt(position.z / GameObject.Find("Grid").GetComponent<TriangularGrid>().GridZDimension);
         //Debug.Log(x + ", " + y + ", " + z);
-        GameObject ClosestSphere = GameObject.Find("Grid").GetComponent<TriangularGrid>().gridSphereArray[x, 0, z];
+        GameObject ClosestSphere = GameObject.Find("Grid").GetComponent<TriangularGrid>().gridSphereArray[x, z];
         return ClosestSphere;
     }
 
     public void Place()
     {
-        RaycastHit hitInfo;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (SnappableModuleAvailable)
+        if(GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<Module>().Colliding != true)
         {
-            if (Physics.Raycast(ray, out hitInfo, 10))
-            {
-                transform.position = ClosestModuleSphere(hitInfo.point, GameObject.Find("Game").GetComponent<Game>().ModulesList[SnappableModuleID]);
-                Follow = false;
-                GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
-                this.gameObject.GetComponent<Module>().LastPosition = transform.position;
-                this.gameObject.GetComponent<Module>().placedOnce = true;
-                Debug.Log("Placed at a module");
-            }
-        }
+            RaycastHit hitInfo;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        else
-        {
-            if (Physics.Raycast(ray, out hitInfo, 9))
+            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Spheres))
             {
-                //Debug.Log(hitInfo.point);
-                Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + GetComponent<Module>().directionVector;
+                hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
+                Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
                 transform.position = position;
                 Follow = false;
                 GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
                 this.gameObject.GetComponent<Module>().LastPosition = transform.position;
                 this.gameObject.GetComponent<Module>().placedOnce = true;
-                Debug.Log("Placed at a grid");
             }
+            else
+            {
+                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Grid))
+                {
+                    //Debug.Log(hitInfo.point);
+                    //Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                    Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                    ClosestGridSphere(hitInfo.point).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                    //hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                    transform.position = position;
+
+                    Follow = false;
+                    GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
+                    this.gameObject.GetComponent<Module>().LastPosition = transform.position;
+                    this.gameObject.GetComponent<Module>().placedOnce = true;
+                    //Debug.Log("Placed at a grid");
+                }
+            }
+            Debug.Log(this.gameObject.name + " is placed at " + this.gameObject.transform.position);
         }
 
-        Debug.Log(this.gameObject.name + " is placed at " + this.gameObject.transform.position);
     }
 
-    public Vector3 ClosestModuleSphere(Vector3 hitLocation,GameObject SpanningModule)
-    {
-        Debug.Log("Snapping Module: " + SpanningModule.name);
-        GameObject closestSphere = SpanningModule.GetComponent<Module>().A_Spheres[0];
-        float minDistance = 1000000.00f;
-        for(int i = 0; i < SpanningModule.GetComponent<Module>().C_Spheres.Length; i++)
-        {
-            float distance = Vector3.Distance(SpanningModule.GetComponent<Module>().C_Spheres[i].transform.position, hitLocation);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestSphere = SpanningModule.GetComponent<Module>().C_Spheres[i];
-            }
-        }
-        for (int i = 0; i < SpanningModule.GetComponent<Module>().B_Spheres.Length; i++)
-        {
-            float distance = Vector3.Distance(SpanningModule.GetComponent<Module>().B_Spheres[i].transform.position, hitLocation);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestSphere = SpanningModule.GetComponent<Module>().B_Spheres[i];
-            }
-        }
-        Debug.Log("Closest distance: " + minDistance);
-        Debug.Log("Closest Sphere: " + closestSphere.name);
-        Debug.Log("Closest Sphere Direct location: " + closestSphere.transform.position);
-        Debug.Log("Closest Sphere Inverse Transform location: " + SpanningModule.transform.TransformPoint(closestSphere.transform.position));
-        return closestSphere.transform.position;
-    }
 }

@@ -16,12 +16,11 @@ public class TriangularGrid : MonoBehaviour {
     public GameObject gridSpherePrefab;
 
     [HideInInspector]
-    public GameObject[,,] gridSphereArray;
+    public GameObject[,] gridSphereArray;
 
     [HideInInspector]
     public int LengthCount;
     public int WidthCount;
-    public int HeightCount;
 
 	// Use this for initialization
 	void Start () {
@@ -35,7 +34,7 @@ public class TriangularGrid : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        UpdateGridSphereMaterial();
 	}
 
     // Generate the grid
@@ -43,61 +42,58 @@ public class TriangularGrid : MonoBehaviour {
     {
         LengthCount = Mathf.RoundToInt(GridLength / GridXDimension);
         WidthCount = Mathf.RoundToInt(GridWidth / GridZDimension);
-        HeightCount = Mathf.RoundToInt(GridHeight / GridXDimension);
 
-        Debug.Log("Length Count: " + LengthCount + ", Width Count: " + WidthCount + ", Height Count: " + HeightCount);
+        Debug.Log("Length Count: " + LengthCount + ", Width Count: " + WidthCount);
         //Instantiate the gridsphereArray to hold the grid sphere objects
-        gridSphereArray = new GameObject[LengthCount + 1, HeightCount + 1, WidthCount + 1];
-
-        for(int y=0; y < HeightCount; y++)
+        gridSphereArray = new GameObject[LengthCount + 1, WidthCount + 1];
+        //Use a for loop to instantiate and assemble the grid spheres in a triangular fashion
+        //They are staggered along the z-axis (say)
+        for (int z = 0; z <= WidthCount; z++)
         {
-            //Use a for loop to instantiate and assemble the grid spheres in a triangular fashion
-            //They are staggered along the z-axis (say)
-            for (int z = 0; z <= WidthCount; z++)
+            //The sphere placement differs for even nd odd grids (Staggering)
+            //Starting X position
+            float X_StartPoint;
+            if (z % 2 == 0) //Even
             {
-                //The sphere placement differs for even nd odd grids (Staggering)
-                //Starting X position
-                float X_StartPoint;
-                if (z % 2 == 0) //Even
+                X_StartPoint = 0;
+                for (int x = 0; x <= LengthCount; x++)
                 {
-                    X_StartPoint = 0;
-                    for (int x = 0; x <= LengthCount; x++)
-                    {
-                        Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, y * GridXDimension, z * GridZDimension);
-                        GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
-                        currentSphere.transform.parent = transform.parent;
-                        currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ")";
-                        gridSphereArray[x, y, z] = currentSphere;
-                        //Turn on the mesh renderer for the lower level gris spheres alone
-                        if (y == 0)
-                        {
-                            currentSphere.GetComponent<MeshRenderer>().enabled = true;
-                        }
-                    }
-            }
-                else //Odd
-                {
-                    X_StartPoint = GridXDimension / 2;
-                    for (int x = 0; x < LengthCount; x++)
-                    {
-                        Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, y * GridXDimension, z * GridZDimension);
-                        GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
-                        currentSphere.transform.parent = transform.parent;
-                        currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + y.ToString() + ", " + z.ToString() + ")";
-                        gridSphereArray[x, y, z] = currentSphere;
-                        //Turn on the mesh renderer for the lower level gris spheres alone
-                        if (y == 0)
-                        {
-                            currentSphere.GetComponent<MeshRenderer>().enabled = true;
-                        }
-                    }
-                    //Assign the last Array element to be null because of the staggering
-                    gridSphereArray[LengthCount, y, z] = null;
+                    Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, 0, z * GridZDimension);
+                    GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
+                    currentSphere.transform.parent = transform.parent;
+                    currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + z.ToString() + ")";
+                    gridSphereArray[x, z] = currentSphere;
                 }
             }
-
-            
+            else //Odd
+            {
+                X_StartPoint = GridXDimension / 2;
+                for (int x = 0; x < LengthCount; x++)
+                {
+                    Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, 0, z * GridZDimension);
+                    GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
+                    currentSphere.transform.parent = transform.parent;
+                    currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + z.ToString() + ")";
+                    gridSphereArray[x, z] = currentSphere;
+                }
+                //Assign the last Array element to be null because of the staggering
+                gridSphereArray[LengthCount, z] = null;
+            }
         }
     }
 
+    public void UpdateGridSphereMaterial()
+    {
+        for(int x = 0; x <= LengthCount; x++)
+        {
+            for(int z = 0; z<=WidthCount; z++)
+            {
+                GameObject currentSphere = gridSphereArray[x, z];
+                if (currentSphere != null)
+                {
+                    currentSphere.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedGridSphere;
+                }
+            }
+        }
+    }
 }

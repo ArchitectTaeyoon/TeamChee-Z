@@ -13,6 +13,11 @@ public class CameraController : MonoBehaviour {
     public Material unselectedModuleFrame;
     public Material selectedModuleFrame;
     public Material highlightedModuleFrame;
+    public Material unselectedGridSphere;
+    public Material highlightedGridSphere;
+    public Material unselectedModuleSphere;
+    public Material selectedModuleSphere;
+    public Material collidingModuleFrame;
 
     Vector3 mousePosition;
     [HideInInspector]
@@ -27,6 +32,12 @@ public class CameraController : MonoBehaviour {
     int MouseClickCounter = 0;
     float DoubleClickInterval = 0.2f;
 
+    public bool DisplayGuideSpheres = true;
+    //LayerMasks
+    public LayerMask Grid;
+    public LayerMask Spheres;
+    public LayerMask Module;
+
 	// Use this for initialization
 	void Start () {
         ModulePrefab = GameObject.Find("Game").GetComponent<Game>().Module; 
@@ -35,15 +46,22 @@ public class CameraController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        GetComponent<LineRenderer>().SetPosition(0, this.transform.position+Vector3.up*-0.5f);
+        CastRay();
+        
         CheckMouseInsideScreen();
         if (MouseClickCounter > 2)
             MouseClickCounter = 0;
 
+        UpdateGuideSpheres();
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            ToggleGuideSphereVisibility();
+        }
+
         if (mouseInsideScreen && GameObject.Find("Game").GetComponent<Game>().reassigned)
         {
             CastRay();
-
             if (mouseCarriesModule)
             {
                 if (Input.GetMouseButton(0))
@@ -51,9 +69,19 @@ public class CameraController : MonoBehaviour {
                     GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Place();
                 }
 
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().SwitchReferenceSphereForward();
+                }
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().SwitchReferenceSphereBackward();
+                }
+
                 if (Input.GetKeyDown(KeyCode.R))
                 {
-                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].transform.Rotate(0, 60.0f, 0f);
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().RotateReferenceSpheres();
+                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().RotateModule();
                 }
 
                 if (GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().placedOnce == true)
@@ -155,6 +183,7 @@ public class CameraController : MonoBehaviour {
             MovingModuleId = InstantiatedModule.GetComponent<Module>().ModuleNumber;
            
             mouseCarriesModule = true;
+
             //InstantiatedModule.GetComponent<FollowMouse>().Follow = true;
         }
     }
@@ -162,7 +191,7 @@ public class CameraController : MonoBehaviour {
     public void SelectModule()
     {
         RaycastHit hitInfo = new RaycastHit();
-        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, 10);
+        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity ,Module);
         if (hit)
         {
             SelectedModule = hitInfo.transform.gameObject;
@@ -198,8 +227,48 @@ public class CameraController : MonoBehaviour {
         {
             RayEnd = hit.point;
             
-            GetComponent<LineRenderer>().SetPosition(1, RayEnd);
         }
+        else
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = 2.0f;
+            RayEnd = Camera.main.ScreenToWorldPoint(mousePosition);
+        }
+
+        GetComponent<LineRenderer>().SetPosition(0, this.transform.position + Vector3.up * -0.05f);
+        GetComponent<LineRenderer>().SetPosition(1, RayEnd);
     }
 
+    public void ToggleGuideSphereVisibility()
+    {
+        GameObject[] GuideSpheres = GameObject.FindGameObjectsWithTag("GuidingSphere");
+        if (DisplayGuideSpheres == true) {
+            DisplayGuideSpheres = false;
+        }
+        else
+        {
+            DisplayGuideSpheres = true;
+        }
+
+
+    }
+
+    public void UpdateGuideSpheres()
+    {
+        GameObject[] GuideSpheres = GameObject.FindGameObjectsWithTag("GuidingSphere");
+        if (DisplayGuideSpheres)
+        {
+            for (int i = 0; i < GuideSpheres.Length; i++)
+            {
+                GuideSpheres[i].GetComponent<MeshRenderer>().enabled = true;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < GuideSpheres.Length; i++)
+            {
+                GuideSpheres[i].GetComponent<MeshRenderer>().enabled = false;
+            }
+        }
+    }
 }

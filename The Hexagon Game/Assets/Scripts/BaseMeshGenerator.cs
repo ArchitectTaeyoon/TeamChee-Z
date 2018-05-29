@@ -33,10 +33,10 @@ public class BaseMeshGenerator : MonoBehaviour {
 
         vertices = new Vector3[]
         {
-            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[0,0,0].transform.position,
-            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[0,0,widthCount].transform.position,
-            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[lengthCount,0,0].transform.position,
-            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[lengthCount,0,widthCount].transform.position,
+            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[0,0].transform.position,
+            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[0,widthCount].transform.position,
+            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[lengthCount,0].transform.position,
+            this.gameObject.GetComponent<TriangularGrid>().gridSphereArray[lengthCount,widthCount].transform.position,
         };
 
         triangles = new int[] { 0, 1, 2, 2, 1, 3 };
