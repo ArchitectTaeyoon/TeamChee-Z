@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour {
 
@@ -20,23 +21,36 @@ public class CameraController : MonoBehaviour {
     public Material collidingModuleFrame;
 
     Vector3 mousePosition;
-    [HideInInspector]
+    
     public bool mouseInsideScreen = false;
     public bool mouseCarriesModule = false;
+    public bool mouseCarriesHuman = false;
+    public bool DisplayFramework = true;
 
     GameObject InstantiatedModule;
     GameObject SelectedModule;
     GameObject ModulePrefab;
     public int MovingModuleId;
+    public int MovingHumanId;
+    public string MovingHumanDesignation;
 
     int MouseClickCounter = 0;
     float DoubleClickInterval = 0.2f;
 
-    public bool DisplayGuideSpheres = true;
     //LayerMasks
     public LayerMask Grid;
     public LayerMask Spheres;
     public LayerMask Module;
+    public LayerMask Humans;
+    public LayerMask HumanOnUI;
+    public LayerMask Framework;
+    public LayerMask ActualModule;
+    public LayerMask WalkableSurface;
+
+    public Vector3 RayEnd;
+
+    public Button RealWorldView;
+    public Button FrameworkView;
 
 	// Use this for initialization
 	void Start () {
@@ -52,16 +66,16 @@ public class CameraController : MonoBehaviour {
         if (MouseClickCounter > 2)
             MouseClickCounter = 0;
 
-        UpdateGuideSpheres();
+        UpdateWorldView();
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ToggleGuideSphereVisibility();
+            ToggleWorldView();
         }
 
-        if (mouseInsideScreen && GameObject.Find("Game").GetComponent<Game>().reassigned)
+        if (mouseInsideScreen && GameObject.Find("Game").GetComponent<Game>().reassignedModules && GameObject.Find("Game").GetComponent<Game>().reassignedHumans)
         {
-            CastRay();
+            
             if (mouseCarriesModule)
             {
                 if (Input.GetMouseButton(0))
@@ -84,24 +98,42 @@ public class CameraController : MonoBehaviour {
                     GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().RotateModule();
                 }
 
-                if (GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().placedOnce == true)
-                {
-                    GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().OnMove();
+                //if (GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().placedOnce == true)
+                //{
+                    
                     if (Input.GetKeyDown(KeyCode.Escape))
                     {
-                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].transform.position = GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition;
-                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Follow = false;
-                        mouseCarriesModule = false;
-                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition = transform.position;
+                        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().OnMove();
+                        if (GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().placedOnce)
+                        {
+                            GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].transform.position = GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition;
+                            GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Follow = false;
+                            mouseCarriesModule = false;
+                            GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().LastPosition = transform.position;
+                        }
+                        else
+                        {
+                            GameObject.Find("Game").GetComponent<Game>().reassignedModules = false;
+                            Destroy(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].gameObject);
+                            GameObject.Find("Game").GetComponent<Game>().ModulesList.RemoveAt(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().ModuleNumber);
+                            mouseCarriesModule = false;
+                        }
                     }
-                }
+                //}
 
                 if (Input.GetKeyDown(KeyCode.Delete))
                 {
-                    GameObject.Find("Game").GetComponent<Game>().reassigned = false;
+                    GameObject.Find("Game").GetComponent<Game>().reassignedModules = false;
                     Destroy(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].gameObject);
                     GameObject.Find("Game").GetComponent<Game>().ModulesList.RemoveAt(GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<Module>().ModuleNumber);
                     mouseCarriesModule = false;
+                }
+            }
+            else if (mouseCarriesHuman)
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    GameObject.Find("Game").GetComponent<Game>().GetMovingHuman().GetComponent<HangOntoMouse>().Place();
                 }
             }
             else
@@ -109,8 +141,15 @@ public class CameraController : MonoBehaviour {
                 //Select a module
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Debug.Log("Mouse Click: " + MouseClickCounter);
-                    MouseClickCounter++;
+                    RaycastHit hitInfo;
+                    bool humanUIhit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, HumanOnUI);
+                    if (humanUIhit)
+                    {
+                        SelectHumanFromUI();
+                        return;
+                    }
+                        // Debug.Log("Mouse Click: " + MouseClickCounter);
+                        MouseClickCounter++;
                     if(MouseClickCounter==1)
                         StartCoroutine("DoubleClickDetector");
                 }
@@ -119,15 +158,21 @@ public class CameraController : MonoBehaviour {
             //Zoom in
             if (Input.GetAxis("Mouse ScrollWheel") > 0)
             {
-                GetComponent<Transform>().position = new Vector3(transform.position.x, transform.position.y - (zoomSpeed * Time.deltaTime), transform.position.z + (zoomSpeed * Time.deltaTime));
-                transform.Rotate(zoomSpeed * Time.deltaTime * -1, 0, 0);
+                //GetComponent<Transform>().position = new Vector3(transform.position.x, transform.position.y - (zoomSpeed * Time.deltaTime), transform.position.z + (zoomSpeed * Time.deltaTime));
+                //transform.Rotate(zoomSpeed * Time.deltaTime * -1, 0, 0);
+                Vector3 mousePosition = Input.mousePosition;
+                mousePosition.z = 100.0f;
+                transform.position = Vector3.MoveTowards(transform.position,Camera.main.ScreenToWorldPoint(mousePosition), zoomSpeed);
             }
 
             //Zoom out
             if (Input.GetAxis("Mouse ScrollWheel") < 0)
             {
-                GetComponent<Transform>().position = new Vector3(transform.position.x, transform.position.y + (zoomSpeed * Time.deltaTime), transform.position.z - (zoomSpeed * Time.deltaTime));
-                transform.Rotate(zoomSpeed * Time.deltaTime, 0, 0);
+                //GetComponent<Transform>().position = new Vector3(transform.position.x, transform.position.y + (zoomSpeed * Time.deltaTime), transform.position.z - (zoomSpeed * Time.deltaTime));
+                //transform.Rotate(zoomSpeed * Time.deltaTime, 0, 0);
+                Vector3 mousePosition = Input.mousePosition;
+                mousePosition.z = -100.0f;
+                transform.position = Vector3.MoveTowards(transform.position, Camera.main.ScreenToWorldPoint(mousePosition), zoomSpeed);
             }
 
             //Rotate
@@ -173,9 +218,11 @@ public class CameraController : MonoBehaviour {
 
     public void InstantiateModule()
     {
-        if (!mouseCarriesModule)
+        if (!mouseCarriesModule && !mouseCarriesHuman)
         {
-            InstantiatedModule = Instantiate(ModulePrefab, Input.mousePosition, Quaternion.Euler(0,90,0));
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = 100.0f;
+            InstantiatedModule = Instantiate(ModulePrefab, new Vector3(0,0,0), Quaternion.Euler(0,90,0));
             GameObject.Find("Game").GetComponent<Game>().AddToModulesList(InstantiatedModule);
             InstantiatedModule.GetComponent<Module>().ModuleNumber = GameObject.Find("Game").GetComponent<Game>().ModulesList.Count-1;
             InstantiatedModule.name = "Module " + InstantiatedModule.GetComponent<Module>().ModuleNumber.ToString();
@@ -198,6 +245,7 @@ public class CameraController : MonoBehaviour {
             MovingModuleId = SelectedModule.GetComponent<Module>().ModuleNumber;
             Debug.Log("Selected Module: " + SelectedModule.name);
             mouseCarriesModule = true;
+            StartCoroutine("SuspendModulePlacing");
             //SelectedModule.GetComponent<FollowMouse>().Follow = true;
         }
         
@@ -209,6 +257,7 @@ public class CameraController : MonoBehaviour {
         if (MouseClickCounter > 1)
         {
             Debug.Log("Double Click.");
+
             SelectModule();
         }
         MouseClickCounter = 0;
@@ -221,54 +270,126 @@ public class CameraController : MonoBehaviour {
         GetComponent<LineRenderer>().enabled = true;
         RaycastHit hit;
         Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        Vector3 RayEnd;
+
 
         if (Physics.Raycast(ray, out hit))
         {
             RayEnd = hit.point;
-            
+
         }
         else
         {
             Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = 2.0f;
+            mousePosition.z = 2000.0f;
             RayEnd = Camera.main.ScreenToWorldPoint(mousePosition);
-        }
+    }
 
-        GetComponent<LineRenderer>().SetPosition(0, this.transform.position + Vector3.up * -0.05f);
+    GetComponent<LineRenderer>().SetPosition(0, this.transform.position + Vector3.up * -0.05f);
         GetComponent<LineRenderer>().SetPosition(1, RayEnd);
     }
 
-    public void ToggleGuideSphereVisibility()
+    public void ToggleWorldView()
     {
         GameObject[] GuideSpheres = GameObject.FindGameObjectsWithTag("GuidingSphere");
-        if (DisplayGuideSpheres == true) {
-            DisplayGuideSpheres = false;
+        if (DisplayFramework == true) {
+            DisplayFramework = false;
         }
         else
         {
-            DisplayGuideSpheres = true;
+            DisplayFramework = true;
         }
-
-
     }
 
-    public void UpdateGuideSpheres()
+    public void UpdateWorldView()
     {
         GameObject[] GuideSpheres = GameObject.FindGameObjectsWithTag("GuidingSphere");
-        if (DisplayGuideSpheres)
+        GameObject[] Framework = GameObject.FindGameObjectsWithTag("Framework");
+        GameObject[] ActualModules = GameObject.FindGameObjectsWithTag("ActualModule");
+        if (DisplayFramework)
         {
+            RealWorldView.enabled = true;
+            RealWorldView.gameObject.GetComponent<Image>().color = new Color(255, 255, 255, 255);
+            FrameworkView.gameObject.GetComponent<Image>().color = new Color(180, 180, 180, 255);
+            FrameworkView.enabled = false;
+            
             for (int i = 0; i < GuideSpheres.Length; i++)
             {
                 GuideSpheres[i].GetComponent<MeshRenderer>().enabled = true;
             }
+            for (int i = 0; i < Framework.Length; i++)
+            {
+                Framework[i].GetComponent<MeshRenderer>().enabled = true;
+            }
+            for (int i = 0; i < ActualModules.Length; i++)
+            {
+                ActualModules[i].GetComponent<MeshRenderer>().enabled = false;
+            }
         }
         else
         {
+            RealWorldView.gameObject.GetComponent<Image>().color = new Color(180, 180, 180, 255);
+            RealWorldView.enabled = false;
+            
+            //RealWorldView.GetComponent<Image>().color = new Color(180, 180, 180, 255);
+            FrameworkView.enabled = true;
+            FrameworkView.gameObject.GetComponent<Image>().color = new Color(255, 255, 255, 255);
             for (int i = 0; i < GuideSpheres.Length; i++)
             {
                 GuideSpheres[i].GetComponent<MeshRenderer>().enabled = false;
             }
+            for (int i = 0; i < Framework.Length; i++)
+            {
+                Framework[i].GetComponent<MeshRenderer>().enabled = false;
+            }
+            for (int i = 0; i < ActualModules.Length; i++)
+            {
+                ActualModules[i].GetComponent<MeshRenderer>().enabled = true;
+            }
         }
+    }
+
+
+    IEnumerator SuspendModulePlacing()
+    {
+        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Placeable = false;
+        //mouseCarriesModule = false;
+        yield return new WaitForSeconds(1.0f);
+        GameObject.Find("Game").GetComponent<Game>().ModulesList[MovingModuleId].GetComponent<FollowMouse>().Placeable = true;
+        //mouseCarriesModule = true;
+    }
+
+    public void SelectHuman()
+    {
+
+    }
+
+    public void SelectHumanFromUI()
+    {
+        if(!mouseCarriesHuman && !mouseCarriesModule)
+        {
+            RaycastHit hitInfo;
+            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, HumanOnUI);
+            if (hit)
+            {
+                mouseCarriesHuman = true;
+                string humanDesignation = hitInfo.transform.gameObject.GetComponent<Agent>().Designation;
+                GameObject CreatedHuman = GameObject.Find("Canvas").GetComponent<InstantiateHumansInUI>().InstantiateHumanforWorldSpace(humanDesignation);
+                GameObject.Find("Game").GetComponent<Game>().AddToHumansList(CreatedHuman);
+                CreatedHuman.name = humanDesignation + " " + CreatedHuman.GetComponent<Agent>().IdNumber;
+                
+                MovingHumanId = CreatedHuman.GetComponent<Agent>().IdNumber;
+                MovingHumanDesignation = humanDesignation;
+                StartCoroutine("SuspendHumanPlacing");
+            }
+        }
+
+    }
+
+    //Suspend human placing
+    IEnumerator SuspendHumanPlacing()
+    {
+        GameObject.Find("Game").GetComponent<Game>().GetMovingHuman().GetComponent<HangOntoMouse>().placeable = false;
+        yield return new WaitForSeconds(0.5f);
+        GameObject.Find("Game").GetComponent<Game>().GetMovingHuman().GetComponent<HangOntoMouse>().placeable = true;
     }
 }

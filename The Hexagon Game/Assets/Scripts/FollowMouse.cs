@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class FollowMouse : MonoBehaviour {
 
-    public float distance = 2.0f;
+    public float distance =200.0f;
     public bool Follow = false;
 
     public bool SnappableModuleAvailable = false;
     public int SnappableModuleID;
+
+    public bool Placeable = true;
 
 	// Use this for initialization
 	void Start () {
@@ -20,7 +22,7 @@ public class FollowMouse : MonoBehaviour {
         if (Follow)
         {
             //GetComponent<Rigidbody>().detectCollisions = false;
-            GetComponent<Module>().CollisionDetection();
+            //GetComponent<Module>().CollisionDetection();
             RaycastHit hitInfo;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -29,6 +31,7 @@ public class FollowMouse : MonoBehaviour {
                 Debug.Log("Hit object: " + hitInfo.transform.gameObject.name);
                 hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
                 Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                //GameObject.Find("Main Camera").GetComponent<CameraController>().RayEnd = position;
                 transform.position = position;
             }
 
@@ -41,20 +44,17 @@ public class FollowMouse : MonoBehaviour {
                     //Vector3 position = hitInfo.transform.gameObject.transform.position+ this.GetComponent<Module>().ReferenceDisplacement;
                     ClosestGridSphere(hitInfo.point).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
                     ///hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                   // GameObject.Find("Main Camera").GetComponent<CameraController>().RayEnd = position;
                     transform.position = position;
                 }
                 else
                 {
-                    Vector3 mousePosition = Input.mousePosition;
-                    mousePosition.z = distance;
-                    transform.position = Camera.main.ScreenToWorldPoint(mousePosition) + this.GetComponent<Module>().ReferenceDisplacement;
+                    //Vector3 mousePosition = Input.mousePosition;
+                    //mousePosition.y = distance;
+                    //transform.position = Camera.main.ScreenToWorldPoint(mousePosition) + this.GetComponent<Module>().ReferenceDisplacement;
+                    transform.position = GameObject.Find("Main Camera").GetComponent<CameraController>().RayEnd + this.GetComponent<Module>().ReferenceDisplacement;
                 }
             }
-            
-        }
-        else
-        {
-           // GetComponent<Rigidbody>().detectCollisions = true;
         }
 	}
 
@@ -69,42 +69,45 @@ public class FollowMouse : MonoBehaviour {
 
     public void Place()
     {
-        if(GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<Module>().Colliding != true)
+        if (Placeable)
         {
-            RaycastHit hitInfo;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (GameObject.Find("Game").GetComponent<Game>().ModulesList[GameObject.Find("Main Camera").GetComponent<CameraController>().MovingModuleId].GetComponent<Module>().Colliding != true)
+            {
+                RaycastHit hitInfo;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Spheres))
-            {
-                hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
-                Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
-                transform.position = position;
-                Follow = false;
-                GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
-                this.gameObject.GetComponent<Module>().LastPosition = transform.position;
-                this.gameObject.GetComponent<Module>().placedOnce = true;
-            }
-            else
-            {
-                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Grid))
+                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Spheres))
                 {
-                    //Debug.Log(hitInfo.point);
-                    //Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
-                    Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + this.GetComponent<Module>().ReferenceDisplacement;
-                    ClosestGridSphere(hitInfo.point).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
-                    //hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                    hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().selectedModuleSphere;
+                    Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                    //GameObject.Find("Main Camera").GetComponent<CameraController>().RayEnd = position;
                     transform.position = position;
-
                     Follow = false;
                     GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
                     this.gameObject.GetComponent<Module>().LastPosition = transform.position;
                     this.gameObject.GetComponent<Module>().placedOnce = true;
-                    //Debug.Log("Placed at a grid");
                 }
+                else
+                {
+                    if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, GameObject.Find("Main Camera").GetComponent<CameraController>().Grid))
+                    {
+                        //Debug.Log(hitInfo.point);
+                        //Vector3 position = hitInfo.transform.gameObject.transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                        Vector3 position = ClosestGridSphere(hitInfo.point).transform.position + this.GetComponent<Module>().ReferenceDisplacement;
+                        ClosestGridSphere(hitInfo.point).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                        //hitInfo.transform.gameObject.GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().highlightedGridSphere;
+                        //GameObject.Find("Main Camera").GetComponent<CameraController>().RayEnd = position;
+                        transform.position = position;
+
+                        Follow = false;
+                        GameObject.Find("Main Camera").GetComponent<CameraController>().mouseCarriesModule = false;
+                        this.gameObject.GetComponent<Module>().LastPosition = transform.position;
+                        this.gameObject.GetComponent<Module>().placedOnce = true;
+                        //Debug.Log("Placed at a grid");
+                    }
+                }
+                Debug.Log(this.gameObject.name + " is placed at " + this.gameObject.transform.position);
             }
-            Debug.Log(this.gameObject.name + " is placed at " + this.gameObject.transform.position);
         }
-
     }
-
 }

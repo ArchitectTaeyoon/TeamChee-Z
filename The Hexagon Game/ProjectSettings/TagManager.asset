@@ -6,6 +6,8 @@ TagManager:
   tags:
   - target
   - GuidingSphere
+  - Framework
+  - ActualModule
   layers:
   - Default
   - TransparentFX
@@ -19,11 +21,11 @@ TagManager:
   - GridBase
   - Module
   - GuidingSphere
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Humans
+  - Human on UI
+  - ActualModule
+  - Framework
+  - WalkableSurface
   - 
   - 
   - 

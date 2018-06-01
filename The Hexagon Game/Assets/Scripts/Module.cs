@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Module : MonoBehaviour {
 
+    [Header("Actual Module")]
+    public GameObject ActualModule;
+
     #region SPHERE GAMEOBJECTS
     [Header("Spheres for reference")]
     [Header("A Spheres")]
@@ -107,7 +110,9 @@ public class Module : MonoBehaviour {
     //Arrays to store the guiding spheres
     //[HideInInspector]
     public GameObject[] Guide_Spheres;
-
+    public GameObject[] Floor_Surfaces;
+    public GameObject[] Inner_Walls;
+    public GameObject[] Outer_Walls;
 
     //Booleans
     public bool highlighted;
@@ -128,8 +133,9 @@ public class Module : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        PopulateSphereArrays();
+        PopulateArrays();
         ReferenceSphereID = 0;
+        
 	}
 	
 	// Update is called once per frame
@@ -139,19 +145,27 @@ public class Module : MonoBehaviour {
         if (GetComponent<FollowMouse>().Follow)
         {
             SetGuideSphereColliders(false);
+            SetFloorSurfaceColliders(false);
         }
         else
         {
             SetGuideSphereColliders(true);
+            SetFloorSurfaceColliders(true);
         }
     }
 
     //Populate The Sphere Arrays
-    public void PopulateSphereArrays()
+    public void PopulateArrays()
     {
         Guide_Spheres = new GameObject[] { A0, A1, A12, A2, A23, A3, A34, A4, A45, A5, A56, A6, A61,
                                            B1, B12, B2, B23, B3, B34, B4, B45, B5, B56, B6, B61,
                                            C0, C1, C12, C2, C23, C3, C34, C4, C45, C5, C56, C6, C61 };
+        Floor_Surfaces = new GameObject[] { S_A0_A1_A2, S_A0_A2_A3, S_A0_A3_A4, S_A0_A4_A5, S_A0_A5_A6, S_A0_A6_A1 };
+        Inner_Walls = new GameObject[] { IW_C0_C1_A1_A0, IW_C0_C2_A2_A0, IW_C0_C3_A3_A0, IW_C0_C4_A4_A0, IW_C0_C5_A5_A0, IW_C0_C6_A6_A0 };
+        Outer_Walls = new GameObject[] { OW_C1_C12_B12_B1, OW_A1_A12_B12_B1, OW_A2_A12_B12_B2, OW_C2_C12_B12_B2, OW_C2_C23_B23_B2, OW_A2_A23_B23_B2,
+                                         OW_A3_A23_B23_B3, OW_C3_C23_B23_B3, OW_C3_C34_B34_B3, OW_A3_A34_B34_B3, OW_A4_A34_B34_B4, OW_C4_C34_B34_B4,
+                                         OW_C4_C45_B45_B4, OW_A4_A45_B45_B4, OW_A5_A45_B45_B5, OW_C5_C45_B45_B5, OW_C5_C56_B56_B5, OW_A5_A56_B56_B5,
+                                         OW_A6_A56_B56_B6, OW_C6_C56_B56_B6, OW_C6_C61_B61_B6, OW_A6_A61_B61_B6, OW_A1_A61_B61_B1, OW_C1_C61_B61_B1 };
     }
 
     //Highlight
@@ -232,6 +246,25 @@ public class Module : MonoBehaviour {
             {
                 Guide_Spheres[i].GetComponent<SphereCollider>().enabled = false;
                 this.GetComponent<MeshCollider>().enabled = false;
+            }
+        }
+    }
+
+    //Toggle floor surface colliders
+    public void SetFloorSurfaceColliders(bool _FloorState)
+    {
+        if (_FloorState == true)
+        {
+            for(int i = 0; i < Floor_Surfaces.Length; i++)
+            {
+                Floor_Surfaces[i].GetComponent<MeshCollider>().enabled = true;
+            }
+        }
+        else
+        {
+            for(int i = 0; i < Floor_Surfaces.Length; i++)
+            {
+                Floor_Surfaces[i].GetComponent<MeshCollider>().enabled = false;
             }
         }
     }
@@ -345,4 +378,6 @@ public class Module : MonoBehaviour {
             GameObject.Find("Game").GetComponent<Game>().ModulesList[GetComponent<FollowMouse>().SnappableModuleID].transform.GetChild(0).GetComponent<MeshRenderer>().material = GameObject.Find("Main Camera").GetComponent<CameraController>().unselectedModuleFrame;
         }
     }
+
+    //Set 
 }

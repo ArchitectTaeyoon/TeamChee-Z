@@ -60,7 +60,7 @@ public class TriangularGrid : MonoBehaviour {
                 {
                     Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, 0, z * GridZDimension);
                     GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
-                    currentSphere.transform.parent = transform.parent;
+                    //currentSphere.transform.parent = transform.parent;
                     currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + z.ToString() + ")";
                     gridSphereArray[x, z] = currentSphere;
                 }
@@ -72,7 +72,7 @@ public class TriangularGrid : MonoBehaviour {
                 {
                     Vector3 SpherePosition = new Vector3(X_StartPoint + x * GridXDimension, 0, z * GridZDimension);
                     GameObject currentSphere = Instantiate(gridSpherePrefab, SpherePosition, Quaternion.identity);
-                    currentSphere.transform.parent = transform.parent;
+                    //currentSphere.transform.parent = transform.parent;
                     currentSphere.name = "Grid Sphere (" + x.ToString() + ", " + z.ToString() + ")";
                     gridSphereArray[x, z] = currentSphere;
                 }
